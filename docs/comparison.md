@@ -15,7 +15,7 @@ Two deployment options for MySQL on Azure: **Managed MySQL (Flexible Server)** a
 | **Monitoring** | Azure metrics and alerts built-in | You install and configure tools |
 | **Convenience** | Very high: Azure handles most tasks | Low: full control, full responsibility |
 | **Customization** | Limited (some config options only) | Full control over OS, MySQL version, config |
-| **Setup Time** | 1st try: 2 hours including error fixes, 2nd try: 30 minutes | 1st try: 4 hours including error fixes, 2nd try: 1 hr |
+| **Setup Time From Start to Finish with Python Scripts** | 1st try: 2 hours including error fixes, 2nd try: 30 minutes | 1st try: 4 hours including error fixes, 2nd try: 1 hr |
 
 ---
 
