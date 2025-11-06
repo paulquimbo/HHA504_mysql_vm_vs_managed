@@ -2,87 +2,81 @@
 
 ## Cloud Provider and Regions
 
-- **Cloud Chosen:** Microsoft Azure
-- **Resources Used:**
-  - **Azure Database for MySQL** — Region: `East US`
+- **Provider:** Microsoft Azure  
+- **Resources Deployed:**
+  - **Azure Database for MySQL (Flexible Server)** — Region: `West US 3`
   - **Azure Virtual Machine (Ubuntu 22.04)** — Region: `East US 2`
 
+---
 
+## Python + MySQL Integration on Azure
 
-### Python + MySQL on Azure
-This guide outlines two options for connecting Python scripts to MySQL on Azure.
+This guide outlines two deployment paths for connecting Python scripts to MySQL databases hosted on Azure.
 
 ### Option 1: Azure-Managed MySQL (Flexible Server)
-#### Steps to Reproduce
-- Create a MySQL Flexible Server in Azure (`East US`)
-  - Set admin credentials
-  - Allow your IP in firewall settings
-- Install Python dependencies locally:
-  ```bash
-  pip install mysql-connector-python python-dotenv
-  ```
-- Create a `.env` file with database credentials:
-  ```env
-  VM_DB_HOST=your-mysql-hostname
-  VM_DB_PORT=3306
-  VM_DB_USER=your-username
-  VM_DB_PASS=your-password
-  VM_DB_NAME=your-database-name
-  ```
-- Load environment variables in Python:
-  ```python
-  from dotenv import load_dotenv
-  load_dotenv()
-  ```
+
+#### Setup Steps
+
+- Provision MySQL Flexible Server in `West US 3`
+- Configure:
+  - Admin credentials
+  - Firewall rules to allow your IP
+  - Disable SSL enforcement
+- Create a `.env` file with credentials
+- Load environment variables in Python
 - Connect using SQLAlchemy
-- Log output and confirm successful queries
+- Log and verify query output
 
 ---
 
 ### Option 2: Self-Hosted MySQL on Azure VM
-#### Steps to Reproduce
-- Deploy Ubuntu VM in Azure (`East US 2`)
-- Install MySQL Server:
-  ```bash
-  sudo apt update
-  sudo apt install mysql-server mysql-client
-  ```
+
+#### Setup Steps
+
+- Deploy Ubuntu VM in `East US 2`
+- Install MySQL Server
 - Create database and user
 - Enable external access:
   ```ini
   bind-address = 0.0.0.0
   ```
-- Open port `3306` in VM’s network security group
-- Install Python and dependencies (same as Option 1)
+- Open port `3306` in the VM’s network security group
+- Install Python and required packages
 - Use `.env` for credentials and connect locally
+- Load environment variables in Python
+- Connect using SQLAlchemy
 - Run scripts and verify output
 
 ---
 
-
-### Connection String Patterns
+## Connection String Pattern
 
 ```python
-# SQLAlchemy pattern
-SQLALCHEMY_DATABASE_URL = (
-    f"mysql+mysqlconnector://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}" 
-    )
+# PyMySQL connection string
+DATABASE_URL = (
+    f"mysql+pymysql://{MAN_DB_USER}:{MAN_DB_PASS}@{MAN_DB_HOST}:{MAN_DB_PORT}/{MAN_DB_NAME}"
+)
+engine = create_engine(DATABASE_URL, pool_pre_ping=True)
 ```
 
-#### Secrets Management
+---
 
-- Secrets are stored in a `.env` file (not committed to Git)
-- Loaded using `dotenv.load_dotenv()` in Python
-- Example `.env` structure:
-```
-##### VM (self-managed MySQL)
+## Secrets Management
+
+- Store credentials in a `.env` file (excluded from Git)
+- Load using `dotenv.load_dotenv()` in Python
+
+### Example `.env` Structure
+
+```bash
+# VM (Self-Hosted MySQL)
 VM_DB_HOST=10.0.1.10
 VM_DB_PORT=3306
 VM_DB_USER=class_user
 VM_DB_PASS=change_me
 VM_DB_NAME=class_db_netid
 
-##### Managed MySQL
+# Managed MySQL
 MAN_DB_HOST=your-managed-endpoint
 MAN_DB_PORT=3306
 MAN_DB_USER=class_user
@@ -92,36 +86,35 @@ MAN_DB_NAME=class_db_netid
 
 ---
 
-### Screenshots Summary
+## Screenshot Summary
 
-#### VM Path (Self-Hosted MySQL)
+### VM Path (Self-Hosted MySQL)
 
 | Step | Screenshot | Description |
 |------|------------|-------------|
-| 1 | ![VM Creation](link-to-vm-creation-screenshot) | Azure VM deployment summary showing region, OS, and public IP |
-| 2 | ![Firewall Rules](link-to-firewall-screenshot) | Network security group with port 3306 open for MySQL access |
-| 3 | ![MySQL Status](link-to-mysql-status-screenshot) | Output of `systemctl status mysql` confirming MySQL is running |
-| 4 | ![MySQL Version](link-to-mysql-version-screenshot) | Output of `mysql --version` showing installed version |
-| 5 | ![MySQL Prompt](link-to-mysql-prompt-screenshot) | `mysql` CLI showing `SHOW DATABASES;` with your DB/table listed |
+| 1 | ![VM Creation](screenshots/vm/vmsetup.png) | VM deployment summary with region, OS, and public IP |
+| 2 | ![Firewall Rules](screenshots/vm/portsetup.png) | NSG showing port 3306 open for MySQL |
+| 3 | ![MySQL Status](screenshots/vm/vmsystemstatus.png) | `systemctl status mysql` output |
+| 4 | ![MySQL Version](screenshots/vm/vmsqlversion.png) | `mysql --version` output |
+| 5 | ![MySQL Prompt](screenshots/vm/showdatabase.png) | `SHOW DATABASES;` output in MySQL CLI |
 
 ---
 
-#### Managed Path (Azure-Managed MySQL)
+### Managed Path (Azure-Managed MySQL)
 
 | Step | Screenshot | Description |
 |------|------------|-------------|
-| 1 | ![Managed MySQL Setup](link-to-managed-mysql-screenshot) | Azure MySQL Flexible Server setup summary with endpoint and admin info |
-| 2 | ![Authorized IPs](link-to-authorized-ips-screenshot) | Firewall rules showing allowed IP ranges for managed MySQL |
-| 3 | ![Query Window](link-to-query-window-screenshot) | Azure portal query editor or metrics page showing successful query |
+| 1 | ![Managed MySQL Setup](screenshots/managed/managedescription.png) | Flexible Server setup summary |
+| 2 | ![Authorized IPs](screenshots/managed/managefirewall.png) | Firewall rules for allowed IPs |
+| 3 | ![Query Window](screenshots/managed/managequery.png) | Query editor or metrics page showing success |
 
 ---
 
-#### Python Runs
+### Python Script Execution
 
 | Step | Screenshot | Description |
 |------|------------|-------------|
-| 1 | ![Environment Layout](link-to-env-screenshot) | `.env` file structure (no secrets) and Python script loading variables |
-| 2 | ![Script Output](link-to-script-output-screenshot) | Terminal output showing row count and successful connection |
-
+| 1 | ![Environment Layout](screenshots/envshot.png) | `.env` file and Python script loading |
+| 2 | ![Script Output](screenshots/output.png) | Terminal output confirming connection and row count |
 
 ---
