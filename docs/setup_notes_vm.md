@@ -22,7 +22,7 @@
    ```bash
    sudo apt update
    sudo apt install mysql-server mysql-client
-   sudo start mysql
+   sudo mysql
    ```
 
 3. **Configure MySQL for External Access**
