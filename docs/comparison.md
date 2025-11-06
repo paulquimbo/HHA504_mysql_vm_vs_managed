@@ -28,7 +28,7 @@ Two deployment options for MySQL on Azure: **Managed MySQL (Flexible Server)** a
 | **Storage** | ~$0.10/GB/month | ~$0.10/GB/month |
 | **Backup & HA** | Included | Manual setup (may cost extra) |
 
-> Managed pricing includes database service, patching, backups, and monitoring. VM pricing only covers the virtual machine—you handle everything else.
+> Managed pricing includes database service, patching, backups, and monitoring. VM pricing only covers the virtual machine, you handle everything else.
 
 ---
 
