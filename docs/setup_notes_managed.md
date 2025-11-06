@@ -72,7 +72,6 @@ with engine.connect() as conn:
 #### Security Notes
 
 - Never commit `.env` files to Git  
-- Use Azure Key Vault for production secrets
 
 ---
 
