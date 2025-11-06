@@ -4,7 +4,7 @@ import pandas as pd
 from sqlalchemy import create_engine, text
 from dotenv import load_dotenv
 
-# --- 0) Load environment ---
+#Load environment
 load_dotenv(".env")
 
 MAN_DB_HOST = os.getenv("MAN_DB_HOST")
@@ -18,7 +18,7 @@ print("[ENV] MAN_DB_PORT:", MAN_DB_PORT)
 print("[ENV] MAN_DB_USER:", MAN_DB_USER)
 print("[ENV] MAN_DB_NAME:", MAN_DB_NAME)
 
-# --- 1) Connect to server and ensure database exists ---
+#1) Connect to server and ensure database exists
 server_url = f"mysql+pymysql://{MAN_DB_USER}:{MAN_DB_PASS}@{MAN_DB_HOST}:{MAN_DB_PORT}/"
 print("[STEP 1] Connecting to Managed MySQL (server only):", server_url.replace(MAN_DB_PASS, "*****"))
 t0 = time.time()
@@ -28,11 +28,11 @@ with engine_server.begin() as conn:
     conn.execute(text(f"CREATE DATABASE IF NOT EXISTS `{MAN_DB_NAME}`"))
 print(f"[OK] Ensured database `{MAN_DB_NAME}` exists. Time taken: {time.time() - t0:.2f}s")
 
-# --- 2) Connect to the target database ---
+#2) Connect to the target database
 db_url = f"mysql+pymysql://{MAN_DB_USER}:{MAN_DB_PASS}@{MAN_DB_HOST}:{MAN_DB_PORT}/{MAN_DB_NAME}"
 engine = create_engine(db_url, pool_pre_ping=True)
 
-# --- 3) Create a DataFrame and write to a table ---
+#3) Create a DataFrame and write to a table
 table_name = "visits"
 df = pd.DataFrame([
     {"patient_id": 10, "visit_date": "2025-10-01", "bp_sys": 117, "bp_dia": 75},
@@ -46,7 +46,7 @@ with engine.begin() as conn:
     df.to_sql(table_name, con=conn, if_exists="replace", index=False)
 print("[OK] Wrote DataFrame to table.")
 
-# --- 4) Read back a quick check ---
+#4) Read back a quick check
 print("[STEP 4] Reading back row count ...")
 with engine.connect() as conn:
     count_df = pd.read_sql(f"SELECT COUNT(*) AS n_rows FROM `{table_name}`", con=conn)
