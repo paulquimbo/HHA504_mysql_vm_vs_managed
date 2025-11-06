@@ -4,8 +4,8 @@ from dotenv import load_dotenv
 from sqlalchemy import create_engine, text
 from datetime import datetime
 
-# --- 1) Load environment variables ---
-load_dotenv(".env")  # Assumes .env is in current working directory
+#1) Load environment variables
+load_dotenv(".env")  
 
 VM_DB_HOST = os.getenv("VM_DB_HOST")
 VM_DB_PORT = os.getenv("VM_DB_PORT", "3306")
@@ -18,7 +18,7 @@ print("[ENV] VM_DB_PORT:", VM_DB_PORT)
 print("[ENV] VM_DB_USER:", VM_DB_USER)
 print("[ENV] VM_DB_NAME:", VM_DB_NAME)
 
-# --- 2) Connect to server and ensure database exists ---
+#2) Connect to server and ensure database exists
 server_url = f"mysql+pymysql://{VM_DB_USER}:{VM_DB_PASS}@{VM_DB_HOST}:{VM_DB_PORT}"
 print("[STEP 1] Connecting to MySQL server (no DB):", server_url.replace(VM_DB_PASS, "*****"))
 t0 = time.time()
@@ -30,14 +30,14 @@ with engine_server.begin() as conn:
 
 print(f"[OK] Ensured database `{VM_DB_NAME}` exists. Time taken: {time.time() - t0:.2f}s")
 
-# --- 3) Connect to the target database ---
+#3) Connect to the target database
 db_url = f"mysql+pymysql://{VM_DB_USER}:{VM_DB_PASS}@{VM_DB_HOST}:{VM_DB_PORT}/{VM_DB_NAME}"
 masked_url = db_url.replace(VM_DB_PASS, "*****")
 print("[STEP 2] Connecting to DB:", masked_url)
 
 engine = create_engine(db_url, pool_pre_ping=True)
 
-# --- 4) Create a DataFrame and write to a table ---
+#4) Create a DataFrame and write to a table
 table_name = "visits"
 df = pd.DataFrame([
     {"patient_id": 1, "visit_date": "2025-09-01", "bp_sys": 118, "bp_dia": 76},
@@ -50,7 +50,7 @@ df = pd.DataFrame([
 df.to_sql(table_name, con=engine, if_exists="replace", index=False)
 print(f"[STEP 3] Wrote {len(df)} rows to `{table_name}` table.")
 
-# --- 5) Read back a quick check ---
+#5) Read back a quick check
 print("[STEP 4] Reading back row count ...")
 with engine.connect() as conn:
     count_df = pd.read_sql(f"SELECT COUNT(*) AS n_rows FROM `{table_name}`", con=conn)
